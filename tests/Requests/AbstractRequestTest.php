@@ -15,7 +15,7 @@ class AbstractRequestTest extends TestCase
         $request = new SendRequest();
     }
 
-    public function testExceptionMessageIsCorrectForInvalidConfig()
+    public function testExceptionMessageIsCorrectForMissingConfig()
     {
         try {
             $request = new SendRequest();
