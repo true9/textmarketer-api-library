@@ -1,0 +1,30 @@
+{
+    "name": "true9/textmarketer-client",
+    "description": "Client library for the Textmarketer.co.uk API",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Tom Lovelady",
+            "email": "tom@true9.co.uk"
+        }
+    ],
+    "require": {
+        "php": "^5.6",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "True9\\Textmarketer\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "True9\\TextmarketerTest\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^4.2",
+        "phpunit/phpunit": "^8.1"
+    }
+}
