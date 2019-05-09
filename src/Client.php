@@ -2,13 +2,14 @@
 
 namespace True9\Textmarketer;
 
+use True9\Textmarketer\Config\ConfigRetrievalStrategy;
 use True9\Textmarketer\Requests\SendRequest;
 
 class Client
 {
-    public function __construct()
+    public function __construct($configRetrievalMethod = null, array $config = null)
     {
-        $request = new SendRequest(['username' => null]);
-        die(dump('True9 Textmarketer Client Constructor Called'));
+        $config = new ConfigRetrievalStrategy($configRetrievalMethod, $config);
+        $request = new SendRequest($config());
     }
 }

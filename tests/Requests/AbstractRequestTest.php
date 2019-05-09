@@ -43,7 +43,7 @@ class AbstractRequestTest extends TestCase
         } catch (ConfigValidationFailureException $e) {
             $message = "Provided config failed validation! ";
             $message .= "The following keys were missing: ";
-            $message .= "endpoint, username, password";
+            $message .= "username, password";
 
             $this->assertEquals($message, $e->getMessage());
         }
@@ -61,7 +61,7 @@ class AbstractRequestTest extends TestCase
         } catch (ConfigValidationFailureException $e) {
             $message = "Provided config failed validation! ";
             $message .= "The following keys were found to be empty or null: ";
-            $message .= "endpoint, username, password";
+            $message .= "username, password";
 
             $this->assertEquals($message, $e->getMessage());
         }
@@ -108,6 +108,7 @@ class AbstractRequestTest extends TestCase
     public function testUrlConstruction($config)
     {
         $request = new SendRequest($config);
+        $request->setEndpoint($config['endpoint']);
 
         $url = $request->constructUrl();
         $expectedUrl = "https://api.textmarketer.co.uk/gateway/";

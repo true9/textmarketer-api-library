@@ -20,7 +20,7 @@ abstract class AbstractRequest
     protected $baseUrl = 'api.textmarketer.co.uk/gateway/';
 
     /**
-     * The endpoint the request will be made to
+     * The endpoint to make the request to
      * @var $endpoint
      */
     protected $endpoint;
@@ -73,7 +73,6 @@ abstract class AbstractRequest
 
         $this->setUsername($config['username']);
         $this->setPassword($config['password']);
-        $this->setEndpoint($config['endpoint']);
         $this->setResponseType($responseType);
 
         $this->constructUrl($config);
@@ -102,7 +101,7 @@ abstract class AbstractRequest
     private function validateKeys(array $config)
     {
         $valid = true;
-        $requiredKeys = ['endpoint', 'username', 'password'];
+        $requiredKeys = ['username', 'password'];
         $missingKeys = [];
         $invalidKeys = [];
 
