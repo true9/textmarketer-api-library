@@ -19,7 +19,7 @@ class ConfigRetrievalStrategyTest extends TestCase
         putenv('TRUE9_TEXTMARKETER_CLIENT_CONFIG=username=test&password=test&response_type=json');
 
         $strategy = new ConfigRetrievalStrategy();
-        $config = $strategy();
+        $config = $strategy->loadConfig();
 
         $this->assertEquals('env', $strategy->getMethod());
 
@@ -40,7 +40,7 @@ class ConfigRetrievalStrategyTest extends TestCase
         file_put_contents(getcwd() . '/config/textmarketer.config.php', $fileContent);
 
         $strategy = new ConfigRetrievalStrategy();
-        $config = $strategy();
+        $config = $strategy->loadConfig();
 
         $this->assertEquals('file', $strategy->getMethod());
 

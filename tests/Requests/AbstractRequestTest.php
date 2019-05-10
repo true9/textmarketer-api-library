@@ -78,7 +78,7 @@ class AbstractRequestTest extends TestCase
         $request = new SendSmsRequest($config);
 
         $this->assertEquals($request->getProtocol(), 'https');
-        $this->assertEquals($request->getBaseUrl(), 'api.textmarketer.co.uk/gateway/');
+        $this->assertEquals($request->getBaseUrl(), 'api.textmarketer.co.uk');
     }
 
     /**
@@ -111,7 +111,7 @@ class AbstractRequestTest extends TestCase
         $request->setEndpoint($config['endpoint']);
 
         $url = $request->constructUrl();
-        $expectedUrl = "https://api.textmarketer.co.uk/gateway/";
+        $expectedUrl = "https://api.textmarketer.co.uk";
         $expectedUrl .= $config['endpoint'] . '/';
         $expectedUrl .= "?username={$config['username']}";
         $expectedUrl .= "&password={$config['password']}";
@@ -131,8 +131,8 @@ class AbstractRequestTest extends TestCase
     public static function validConfigArrayProvider()
     {
         return [
-            [['username' => 'test', 'password' => 'test', 'endpoint' => 'json-test', 'response_type' => 'json']],
-            [['username' => 'test', 'password' => 'test', 'endpoint' => 'xml-test', 'response_type' => 'xml']]
+            [['username' => 'test', 'password' => 'test', 'endpoint' => '/json-test', 'response_type' => 'json']],
+            [['username' => 'test', 'password' => 'test', 'endpoint' => '/xml-test', 'response_type' => 'xml']]
         ];
     }
 }
