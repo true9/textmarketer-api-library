@@ -5,6 +5,7 @@ namespace True9\TextMarketerTest;
 use PHPUnit\Framework\TestCase;
 use True9\Textmarketer\Exception\ConfigValidationFailureException;
 use True9\Textmarketer\Exception\MissingConfigException;
+use True9\Textmarketer\Exception\MissingHttpRequestMethodException;
 use True9\Textmarketer\Requests\SendSmsRequest;
 
 class AbstractRequestTest extends TestCase
@@ -105,7 +106,7 @@ class AbstractRequestTest extends TestCase
      * @throws ConfigValidationFailureException
      * @throws MissingConfigException
      */
-    public function testUrlConstruction($config)
+    public function testUrlConstructionGeneratesCorrectUrl($config)
     {
         $request = new SendSmsRequest($config);
         $request->setEndpoint($config['endpoint']);
@@ -118,6 +119,20 @@ class AbstractRequestTest extends TestCase
         $expectedUrl .= "&option={$config['response_type']}";
 
         $this->assertEquals($expectedUrl, $url);
+    }
+
+    /**
+     * @dataProvider requestMethodProvider
+     * @param $method
+     * @throws ConfigValidationFailureException
+     * @throws MissingConfigException
+     * @throws MissingHttpRequestMethodException
+     */
+    public function testSendRequestThrowsExceptionIfMethodNotProvided($method)
+    {
+        $this->expectException(MissingHttpRequestMethodException::class);
+        $sms = new SendSmsRequest(['username' => 'test', 'password' => 'test', 'endpoint' => '/xml-test', 'response_type' => 'xml']);
+        $sms->sendRequest(null, []);
     }
 
     public static function invalidConfigArrayProvider()
@@ -133,6 +148,18 @@ class AbstractRequestTest extends TestCase
         return [
             [['username' => 'test', 'password' => 'test', 'endpoint' => '/json-test', 'response_type' => 'json']],
             [['username' => 'test', 'password' => 'test', 'endpoint' => '/xml-test', 'response_type' => 'xml']]
+        ];
+    }
+
+    public static function requestMethodProvider()
+    {
+        return [
+            ['GET'],
+            ['POST'],
+            ['gEt'],
+            ['pOsT'],
+            ['get'],
+            ['post']
         ];
     }
 }
