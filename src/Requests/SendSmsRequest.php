@@ -2,7 +2,7 @@
 
 namespace True9\Textmarketer\Requests;
 
-class SendRequest extends AbstractRequest
+class SendSmsRequest extends AbstractRequest
 {
     protected $endpoint = '/gateway';
 

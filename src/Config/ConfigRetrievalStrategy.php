@@ -32,9 +32,11 @@ class ConfigRetrievalStrategy
             'file'  => Readers\ConfigFileReader::class,
             'env'   => Readers\ConfigEnvironmentReader::class
         ]);
+
+        return $this->loadConfig();
     }
 
-    public function __invoke()
+    public function loadConfig()
     {
         if(!$this->getConfig())
         {
@@ -71,6 +73,8 @@ class ConfigRetrievalStrategy
         $instance = new $classReference();
         $config = $instance();
         $this->setConfig($config);
+
+        return $config;
     }
 
     /**
