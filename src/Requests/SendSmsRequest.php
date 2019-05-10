@@ -4,7 +4,7 @@ namespace True9\Textmarketer\Requests;
 
 class SendSmsRequest extends AbstractRequest
 {
-    protected $endpoint = '/gateway';
+    protected $endpoint = '/services/rest/sms';
 
     public function setEndpoint($endpoint)
     {

@@ -2,8 +2,10 @@
 
 namespace True9\Textmarketer\Requests;
 
+use SimpleXMLElement;
 use True9\Textmarketer\Exception\ConfigValidationFailureException;
 use True9\Textmarketer\Exception\MissingConfigException;
+use True9\Textmarketer\Exception\MissingHttpRequestMethodException;
 
 abstract class AbstractRequest
 {
@@ -59,6 +61,7 @@ abstract class AbstractRequest
      * AbstractRequest constructor.
      *
      * @param array|null $config
+     * @param array $params
      * @throws ConfigValidationFailureException
      * @throws MissingConfigException
      */
@@ -110,7 +113,34 @@ abstract class AbstractRequest
         return $constructedUrl;
     }
 
-    public function sendRequest()
+    /**
+     * @param string|null $method
+     * @param array $data
+     * @return SimpleXMLElement|void
+     * @throws MissingHttpRequestMethodException
+     */
+    public function sendRequest($method = null, array $data)
+    {
+        if($method == null)
+        {
+            throw new MissingHttpRequestMethodException();
+        }
+
+        switch(strtolower($method))
+        {
+            case 'get':
+                return $this->sendGetRequest();
+            case 'post':
+                return $this->sendPostRequest($data);
+        }
+    }
+
+    /**
+     * Make a request to the constructed URL via HTTP GET
+     *
+     * @return SimpleXMLElement
+     */
+    private function sendGetRequest()
     {
         $ch = curl_init();
         curl_setopt_array($ch, [
@@ -118,7 +148,38 @@ abstract class AbstractRequest
             CURLOPT_RETURNTRANSFER => true
         ]);
 
-        return curl_exec($ch);
+        return simplexml_load_string(curl_exec($ch));
+    }
+
+    /**
+     * Make a request to the constructed URL via HTTP POST
+     *
+     * @param array $data
+     * @return SimpleXMLElement
+     */
+    private function sendPostRequest(array $data)
+    {
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $this->getUrl(),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => count($data),
+            CURLOPT_POSTFIELDS => $this->preparePostFields($data)
+        ]);
+
+        return simplexml_load_string(curl_exec($ch));
+    }
+
+    private function preparePostFields(array $data)
+    {
+        $fields = null;
+        foreach($data as $k => $v)
+        {
+            $fields .= $k.'='.$v.'&';
+        }
+
+        rtrim($fields, '&');
+        return $fields;
     }
 
     private function validateKeys(array $config)
