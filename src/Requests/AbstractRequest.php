@@ -17,10 +17,10 @@ abstract class AbstractRequest
      * The base url that all request paths will be relative to
      * @var $baseUrl
      */
-    protected $baseUrl = 'api.textmarketer.co.uk/gateway/';
+    protected $baseUrl = 'api.textmarketer.co.uk';
 
     /**
-     * The endpoint the request will be made to
+     * The endpoint to make the request to
      * @var $endpoint
      */
     protected $endpoint;
@@ -50,13 +50,19 @@ abstract class AbstractRequest
     protected $url;
 
     /**
+     * Additional parameters for the request
+     * @var $params
+     */
+    protected $params = [];
+
+    /**
      * AbstractRequest constructor.
      *
      * @param array|null $config
      * @throws ConfigValidationFailureException
      * @throws MissingConfigException
      */
-    public function __construct($config = null)
+    public function __construct($config = null, $params = [])
     {
         if($config == null)
         {
@@ -73,8 +79,8 @@ abstract class AbstractRequest
 
         $this->setUsername($config['username']);
         $this->setPassword($config['password']);
-        $this->setEndpoint($config['endpoint']);
         $this->setResponseType($responseType);
+        $this->setParams($params);
 
         $this->constructUrl($config);
     }
@@ -95,14 +101,30 @@ abstract class AbstractRequest
         $constructedUrl .= "&password=" . $this->getPassword();
         $constructedUrl .= "&option=" . $this->getResponseType();
 
+        foreach($this->getParams() as $k => $v)
+        {
+            $constructedUrl .= "&{$k}=${v}";
+        }
+
         $this->setUrl($constructedUrl);
         return $constructedUrl;
+    }
+
+    public function sendRequest()
+    {
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $this->getUrl(),
+            CURLOPT_RETURNTRANSFER => true
+        ]);
+
+        return curl_exec($ch);
     }
 
     private function validateKeys(array $config)
     {
         $valid = true;
-        $requiredKeys = ['endpoint', 'username', 'password'];
+        $requiredKeys = ['username', 'password'];
         $missingKeys = [];
         $invalidKeys = [];
 
@@ -252,5 +274,16 @@ abstract class AbstractRequest
     public function getUrl()
     {
         return $this->url;
+    }
+
+    public function setParams(array $params)
+    {
+        $this->params = $params;
+        return $this;
+    }
+
+    public function getParams()
+    {
+        return $this->params;
     }
 }

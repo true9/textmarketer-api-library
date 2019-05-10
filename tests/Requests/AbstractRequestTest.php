@@ -5,20 +5,20 @@ namespace True9\TextMarketerTest;
 use PHPUnit\Framework\TestCase;
 use True9\Textmarketer\Exception\ConfigValidationFailureException;
 use True9\Textmarketer\Exception\MissingConfigException;
-use True9\Textmarketer\Requests\SendRequest;
+use True9\Textmarketer\Requests\SendSmsRequest;
 
 class AbstractRequestTest extends TestCase
 {
     public function testExceptionIsThrownIfConfigNotProvided()
     {
         $this->expectException(MissingConfigException::class);
-        $request = new SendRequest();
+        $request = new SendSmsRequest();
     }
 
     public function testExceptionMessageIsCorrectForMissingConfig()
     {
         try {
-            $request = new SendRequest();
+            $request = new SendSmsRequest();
         } catch (MissingConfigException $e) {
             $this->assertEquals("A config array must be provided when instantiating a request class", $e->getMessage());
         }
@@ -33,17 +33,17 @@ class AbstractRequestTest extends TestCase
     public function testExceptionIsThrownIfInvalidConfigIsProvided($config)
     {
         $this->expectException(ConfigValidationFailureException::class);
-        $request = new SendRequest($config);
+        $request = new SendSmsRequest($config);
     }
 
     public function testMissingArrayKeysArePrintedInErrorMessage()
     {
         try {
-            $request = new SendRequest(['key' => 'val']);
+            $request = new SendSmsRequest(['key' => 'val']);
         } catch (ConfigValidationFailureException $e) {
             $message = "Provided config failed validation! ";
             $message .= "The following keys were missing: ";
-            $message .= "endpoint, username, password";
+            $message .= "username, password";
 
             $this->assertEquals($message, $e->getMessage());
         }
@@ -57,11 +57,11 @@ class AbstractRequestTest extends TestCase
     public function testInvalidArrayKeysArePrintedInErrorMessage($config)
     {
         try {
-            $request = new SendRequest($config);
+            $request = new SendSmsRequest($config);
         } catch (ConfigValidationFailureException $e) {
             $message = "Provided config failed validation! ";
             $message .= "The following keys were found to be empty or null: ";
-            $message .= "endpoint, username, password";
+            $message .= "username, password";
 
             $this->assertEquals($message, $e->getMessage());
         }
@@ -75,10 +75,10 @@ class AbstractRequestTest extends TestCase
      */
     public function testDefaultValuesAreSet($config)
     {
-        $request = new SendRequest($config);
+        $request = new SendSmsRequest($config);
 
         $this->assertEquals($request->getProtocol(), 'https');
-        $this->assertEquals($request->getBaseUrl(), 'api.textmarketer.co.uk/gateway/');
+        $this->assertEquals($request->getBaseUrl(), 'api.textmarketer.co.uk');
     }
 
     /**
@@ -89,7 +89,7 @@ class AbstractRequestTest extends TestCase
      */
     public function testDefaultValuesCanBeOverridden($config)
     {
-        $request = new SendRequest($config);
+        $request = new SendSmsRequest($config);
 
         $request->setProtocol('http');
         $request->setBaseUrl('google.com');
@@ -107,10 +107,11 @@ class AbstractRequestTest extends TestCase
      */
     public function testUrlConstruction($config)
     {
-        $request = new SendRequest($config);
+        $request = new SendSmsRequest($config);
+        $request->setEndpoint($config['endpoint']);
 
         $url = $request->constructUrl();
-        $expectedUrl = "https://api.textmarketer.co.uk/gateway/";
+        $expectedUrl = "https://api.textmarketer.co.uk";
         $expectedUrl .= $config['endpoint'] . '/';
         $expectedUrl .= "?username={$config['username']}";
         $expectedUrl .= "&password={$config['password']}";
@@ -130,8 +131,8 @@ class AbstractRequestTest extends TestCase
     public static function validConfigArrayProvider()
     {
         return [
-            [['username' => 'test', 'password' => 'test', 'endpoint' => 'json-test', 'response_type' => 'json']],
-            [['username' => 'test', 'password' => 'test', 'endpoint' => 'xml-test', 'response_type' => 'xml']]
+            [['username' => 'test', 'password' => 'test', 'endpoint' => '/json-test', 'response_type' => 'json']],
+            [['username' => 'test', 'password' => 'test', 'endpoint' => '/xml-test', 'response_type' => 'xml']]
         ];
     }
 }
