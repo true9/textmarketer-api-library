@@ -86,11 +86,14 @@ putenv('TRUE9_TEXTMARKETER_CLIENT_CONFIG=username=test&password=test);
 After you've configured your client, sending messages is very simple. All you need to do is instantiate a `ConfigStrategy` (or pull one out of a DI container if you're so inclined) and pass it to an `SmsSendRequest` object like so;
 
 ```php
+$config = new ConfigRetrievalStrategy();
+
 /*
 * Some additional operations are available via GET on the textmarketer API,
 * so you can specify your request method if you need to access them.
 */ 
-$request = new SendSmsRequest('post', [
+$request = new SendSmsRequest($config);
+$request->sendRequest('post', [
     'to' => '01234567890',
     'message' => 'Hello, world!',
     'originator' => 'True9'
