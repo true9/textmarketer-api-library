@@ -165,16 +165,18 @@ abstract class AbstractRequest
             CURLOPT_HTTPHEADER => ['Content-Type: application/x-www-form-urlencoded']
         ]);
 
-        return simplexml_load_string(curl_exec($ch));
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+        return simplexml_load_string($result);
     }
 
     private function preparePostFields(array $data)
     {
         $fields = null;
 
-        $fields .= "?username={$this->getUsername()}";
-        $fields .= "&password={$this->getPassword()}";
-        $fields .= "&option={$this->getResponseType()}";
+        $fields .= "username={$this->getUsername()}&";
+        $fields .= "password={$this->getPassword()}&";
 
         foreach($data as $k => $v)
         {
