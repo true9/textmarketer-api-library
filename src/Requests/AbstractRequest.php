@@ -100,13 +100,10 @@ abstract class AbstractRequest
         $constructedUrl = $this->getProtocol() . '://';
         $constructedUrl .= $this->getBaseUrl();
         $constructedUrl .= $this->getEndpoint() . '/';
-        $constructedUrl .= "?username=" . $this->getUsername();
-        $constructedUrl .= "&password=" . $this->getPassword();
-        $constructedUrl .= "&option=" . $this->getResponseType();
 
         foreach($this->getParams() as $k => $v)
         {
-            $constructedUrl .= "&{$k}=${v}";
+            $constructedUrl .= "&{$k}={$v}";
         }
 
         $this->setUrl($constructedUrl);
@@ -164,7 +161,8 @@ abstract class AbstractRequest
             CURLOPT_URL => $this->getUrl(),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => count($data),
-            CURLOPT_POSTFIELDS => $this->preparePostFields($data)
+            CURLOPT_POSTFIELDS => $this->preparePostFields($data),
+            CURLOPT_HTTPHEADER => ['Content-Type: application/x-www-form-urlencoded']
         ]);
 
         return simplexml_load_string(curl_exec($ch));
@@ -173,6 +171,11 @@ abstract class AbstractRequest
     private function preparePostFields(array $data)
     {
         $fields = null;
+
+        $fields .= "?username={$this->getUsername()}";
+        $fields .= "&password={$this->getPassword()}";
+        $fields .= "&option={$this->getResponseType()}";
+
         foreach($data as $k => $v)
         {
             $fields .= $k.'='.$v.'&';

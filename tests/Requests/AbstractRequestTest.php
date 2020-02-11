@@ -114,9 +114,6 @@ class AbstractRequestTest extends TestCase
         $url = $request->constructUrl();
         $expectedUrl = "https://api.textmarketer.co.uk";
         $expectedUrl .= $config['endpoint'] . '/';
-        $expectedUrl .= "?username={$config['username']}";
-        $expectedUrl .= "&password={$config['password']}";
-        $expectedUrl .= "&option={$config['response_type']}";
 
         $this->assertEquals($expectedUrl, $url);
     }
